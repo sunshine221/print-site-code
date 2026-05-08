@@ -10,7 +10,7 @@
 - 站点域名/地址：`http://<域名或公网IP>/`
 
 ## 一、从 GitHub 拉取代码（网络可用前提）
-### 1) 常见问题：服务器直连 GitHub 失败导致 `git clone` 卡住
+### 1.1 常见问题：服务器直连 GitHub 失败导致 `git clone` 卡住
 表现：
 - `curl -I https://github.com` 超时
 - `git clone https://github.com/...` 长时间无输出或失败
@@ -19,7 +19,7 @@
 - 优先配置服务器代理（见本文“踩坑总结：GitHub 访问与代理”）
 - 或使用压缩包上传到服务器绕开 GitHub 访问（备选方案）
 
-### 2) 正确的 clone 命令（不要用反引号）
+### 1.2 正确的 clone 命令（不要用反引号）
 ```bash
 cd /opt/print-site
 git clone https://github.com/sunshine221/print-site-code.git
@@ -39,13 +39,52 @@ sudo npm i -g pm2
 说明：
 - `nginx`：托管前端静态文件 + 反向代理 `/api` 到后端
 - `pm2`：守护 Node/Express 后端进程，支持开机自启
+- 以上命令通常只需要执行一次：仅当服务器重装、需要升级系统包/Node/PM2 时才需要重复执行
+- `sudo apt update` 不需要每次更新代码都执行，只有安装/升级系统包时再执行更合适
+
+### 2.1 配置环境变量（一次性，必须）
+进入项目目录，复制并编辑 `.env`：
+```bash
+cd /opt/print-site/print-site-code/workspace
+cp .env.example .env
+nano .env
+```
+
+至少要改这些（很关键）：
+```bash
+JWT_SECRET=改成强随机字符串
+ADMIN_PASSWORD=改成你的管理员密码
+DB_PATH=/opt/print-site/data/app.sqlite
+PORT=3000
+```
+
+如果你要启用“代打上传直传 COS”，再补齐：
+```bash
+COS_BUCKET=...
+COS_REGION=...
+COS_SECRET_ID=...
+COS_SECRET_KEY=...
+UPLOAD_MAX_BYTES=209715200
+```
+
+并创建数据库目录（确保后端进程可写）：
+```bash
+sudo mkdir -p /opt/print-site/data
+sudo chown -R $USER:$USER /opt/print-site/data
+```
 
 ## 三、安装依赖（项目级）
 在项目目录执行：
 ```bash
 cd /opt/print-site/print-site-code/workspace
-npm install
+npm ci
 ```
+
+说明：
+- 推荐使用 `npm ci`（严格按 package-lock.json 安装，更稳定）
+- 每次 Git 更新后是否需要执行依赖安装：
+  - 若 `workspace/package.json` 或 `workspace/package-lock.json` 有变化：需要执行 `npm ci`
+  - 若没有变化：通常可以跳过依赖安装，直接构建与重启即可
 
 ## 四、构建前后端产物
 ```bash
@@ -75,7 +114,7 @@ curl -I http://127.0.0.1:3000/api/health
 ```
 
 ## 六、配置 Nginx（前端托管 + API 反向代理）
-### 1) 站点配置文件
+### 6.1 站点配置文件
 ```bash
 sudo nano /etc/nginx/sites-available/print-site
 ```
@@ -110,7 +149,7 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-### 2) 验证 Nginx 前端与 API
+### 6.2 验证 Nginx 前端与 API
 前端页面：
 - `http://<域名或公网IP>/`
 - `http://<域名或公网IP>/admin/login`
@@ -120,9 +159,52 @@ API（从 Nginx 入口验证）：
 curl -i http://127.0.0.1/api/health
 ```
 
-## 七、踩坑总结与排查经验
+## 七、Git 更新后的服务器操作（每次发布/更新）
+目标：当 GitHub 仓库有更新时，在服务器拉取最新代码并让线上立即生效。
 
-### 1) 命令不要带反引号
+### 7.1 先 SSH 登录腾讯云服务器
+```bash
+ssh ubuntu@你的公网IP
+```
+
+### 7.2 拉取最新代码
+```bash
+cd /opt/print-site/print-site-code
+git pull
+```
+
+### 7.3 安装依赖（按需）
+仅当 `workspace/package.json` 或 `workspace/package-lock.json` 有变化时执行：
+```bash
+cd /opt/print-site/print-site-code/workspace
+npm ci
+```
+
+### 7.4 重新构建（前端 dist + 后端 api/dist）
+```bash
+cd /opt/print-site/print-site-code/workspace
+npm run build
+```
+
+### 7.5 重启后端（PM2）
+```bash
+pm2 restart print-site-api
+pm2 save
+```
+
+### 7.6 验证
+后端本机直连：
+```bash
+curl -I http://127.0.0.1:3000/api/health
+```
+走 Nginx 入口：
+```bash
+curl -i http://127.0.0.1/api/health
+```
+
+## 八、踩坑总结与排查经验
+
+### 8.1 命令不要带反引号
 错误示例：
 - `git clone \`https://github.com/...git\``
 - `curl -I \`https://github.com\``
@@ -130,7 +212,7 @@ curl -i http://127.0.0.1/api/health
 说明：
 - 反引号在 shell 中是命令替换，容易造成参数异常或排查困难。
 
-### 2) `npm install` 失败：better-sqlite3 编译缺少 g++
+### 8.2 `npm install` 失败：better-sqlite3 编译缺少 g++
 现象（关键行）：
 - `make: g++: No such file or directory`
 
@@ -144,11 +226,11 @@ sudo apt install -y build-essential python3 make g++
 ```
 然后重新安装依赖：
 ```bash
-rm -rf node_modules package-lock.json
-npm install
+rm -rf node_modules
+npm ci
 ```
 
-### 3) Nginx 404 Not Found（访问 /admin/login）
+### 8.3 Nginx 404 Not Found（访问 /admin/login）
 现象：
 - 浏览器访问 `/admin/login` 显示 Nginx 404
 
@@ -162,7 +244,7 @@ sudo nginx -T | grep -n "root " -n | head
 sudo nginx -T | grep -n "try_files \\$uri /index.html" -n
 ```
 
-### 4) 前端提示 “API not found”（/api/auth/login 404）
+### 8.4 前端提示 “API not found”（/api/auth/login 404）
 现象：
 - 后端本机 `curl http://127.0.0.1:3000/api/health` 正常
 - 浏览器请求 `http://<域名>/api/auth/login` 返回 404，前端显示 “API not found”
@@ -189,7 +271,7 @@ location /api/ {
 curl -i http://127.0.0.1/api/health
 ```
 
-### 5) GitHub 访问与代理（概要）
+### 8.5 GitHub 访问与代理（概要）
 当服务器直连 GitHub 超时时，可在服务器部署 mihomo 代理后再进行 clone。
 - 重点：订阅配置可能依赖 `Country.mmdb`，如果无法自动下载会导致端口不监听，需要手动放置 mmdb 打破死循环。
 - 详细记录见：
