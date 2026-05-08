@@ -1,0 +1,258 @@
+{
+  "currency": "CNY",
+  "products": [
+    {
+      "id": "prod_phone-stand",
+      "title": "桌面折叠手机支架（可定制Logo）",
+      "summary": "轻量便携的折叠结构，适合企业礼品与活动周边，可按需求定制颜色与Logo。",
+      "process": "FDM",
+      "material": "PLA/ABS",
+      "leadTimeDays": 3,
+      "priceHint": "量大可议，支持打样",
+      "tags": [
+        { "group": "用途", "name": "桌面配件" },
+        { "group": "行业", "name": "礼品周边" },
+        { "group": "后处理", "name": "喷涂/丝印" }
+      ],
+      "gallery": [
+        {
+          "type": "image",
+          "name": "phone-stand-hero",
+          "url": "https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=studio%20product%20photo%20of%20a%203D%20printed%20foldable%20smartphone%20stand%2C%20matte%20black%20PLA%20texture%2C%20on%20dark%20industrial%20desk%2C%20soft%20side%20lighting%2C%20sharp%20details%2C%20realistic%2C%2085mm%20lens%2C%20minimal%20background%2C%20high%20contrast%2C%20professional%20photography&image_size=landscape_4_3"
+        },
+        {
+          "type": "image",
+          "name": "phone-stand-fold",
+          "url": "https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=close-up%20product%20photo%20of%20a%203D%20printed%20folding%20phone%20stand%20hinge%20detail%2C%20matte%20polymer%20surface%2C%20subtle%20layer%20lines%2C%20dark%20background%2C%20soft%20rim%20light%2C%20realistic%2C%20macro%20photography%2C%20high%20detail&image_size=landscape_4_3"
+        }
+      ],
+      "skus": [
+        {
+          "id": "sku_phone-stand_pla_black",
+          "skuCode": "PS-PLA-BLK",
+          "attributes": { "材料": "PLA", "颜色": "哑黑", "表面": "细纹" },
+          "priceMin": 18,
+          "priceMax": 35,
+          "stockQty": 200,
+          "published": true
+        },
+        {
+          "id": "sku_phone-stand_abs_white",
+          "skuCode": "PS-ABS-WHT",
+          "attributes": { "材料": "ABS", "颜色": "哑白", "表面": "细纹" },
+          "priceMin": 22,
+          "priceMax": 45,
+          "stockQty": 120,
+          "published": true
+        }
+      ],
+      "featured": true,
+      "published": true
+    },
+    {
+      "id": "prod_precision-gear",
+      "title": "精密齿轮组（功能验证/小批量）",
+      "summary": "用于机构测试与功能验证，支持小模数、低间隙方案，适合研发阶段快速迭代。",
+      "process": "SLA",
+      "material": "耐磨树脂",
+      "leadTimeDays": 5,
+      "priceHint": "可按图纸/样件优化参数",
+      "tags": [
+        { "group": "用途", "name": "功能件" },
+        { "group": "行业", "name": "工业设备" },
+        { "group": "精度等级", "name": "高精度" }
+      ],
+      "gallery": [
+        {
+          "type": "image",
+          "name": "gear-set-closeup",
+          "url": "https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=macro%20studio%20photo%20of%20small%20precision%20gears%2C%20resin%203D%20printed%2C%20clean%20teeth%20profile%2C%20engineering%20prototype%20aesthetic%2C%20dark%20background%2C%20specular%20highlights%2C%20ultra%20sharp%2C%20realistic%20product%20photography&image_size=landscape_4_3"
+        },
+        {
+          "type": "image",
+          "name": "gear-set-assembly",
+          "url": "https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=studio%20photo%20of%20a%20compact%20gearbox%20prototype%20with%20visible%20gear%20train%2C%20high%20detail%2C%20industrial%20lighting%2C%20dark%20workbench%2C%20realistic%2C%20engineering%20product%20shot&image_size=landscape_4_3"
+        }
+      ],
+      "skus": [
+        {
+          "id": "sku_gear_m0p8_set",
+          "skuCode": "GEAR-M0.8-SET",
+          "attributes": { "模数": "0.8", "套件": "4件套", "精度": "±0.1mm" },
+          "priceMin": 120,
+          "priceMax": 260,
+          "stockQty": 20,
+          "published": true
+        }
+      ],
+      "featured": true,
+      "published": true
+    },
+    {
+      "id": "prod_mini-figure",
+      "title": "手办原型（高细节）",
+      "summary": "适合角色雕刻、收藏级原型展示与打样，支持后处理与上色方案建议。",
+      "process": "SLA",
+      "material": "高细节树脂",
+      "leadTimeDays": 7,
+      "priceHint": "可提供喷涂/上色服务（另计）",
+      "tags": [
+        { "group": "用途", "name": "原型展示" },
+        { "group": "行业", "name": "文创潮玩" },
+        { "group": "后处理", "name": "打磨/喷涂" }
+      ],
+      "gallery": [
+        {
+          "type": "image",
+          "name": "mini-figure-front",
+          "url": "https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=studio%20photo%20of%20a%20high-detail%20unpainted%20resin%20figurine%20prototype%2C%20neutral%20gray%2C%20sharp%20surface%20details%2C%20soft%20box%20lighting%2C%20dark%20background%2C%20realistic%20product%20photography&image_size=landscape_4_3"
+        },
+        {
+          "type": "image",
+          "name": "mini-figure-detail",
+          "url": "https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=macro%20close-up%20of%20a%20resin%20figurine%20prototype%20surface%20detail%2C%20fine%20engraving%2C%20soft%20rim%20light%2C%20dark%20background%2C%20realistic%20high%20detail%20product%20photo&image_size=landscape_4_3"
+        }
+      ],
+      "skus": [
+        {
+          "id": "sku_figure_100mm",
+          "skuCode": "FIG-100MM",
+          "attributes": { "高度": "100mm", "精度": "±0.1mm", "颜色": "灰" },
+          "priceMin": 180,
+          "priceMax": 420,
+          "stockQty": 10,
+          "published": true
+        },
+        {
+          "id": "sku_figure_180mm",
+          "skuCode": "FIG-180MM",
+          "attributes": { "高度": "180mm", "精度": "±0.1mm", "颜色": "灰" },
+          "priceMin": 320,
+          "priceMax": 750,
+          "stockQty": 6,
+          "published": true
+        }
+      ],
+      "featured": false,
+      "published": true
+    },
+    {
+      "id": "prod_electronics-enclosure",
+      "title": "电子设备外壳（快速打样）",
+      "summary": "适合IoT/仪器仪表外壳打样，支持螺柱、卡扣、散热孔位等结构验证。",
+      "process": "FDM",
+      "material": "ABS/PA",
+      "leadTimeDays": 4,
+      "priceHint": "可按装配件清单校核结构空间",
+      "tags": [
+        { "group": "用途", "name": "结构验证" },
+        { "group": "行业", "name": "电子硬件" },
+        { "group": "后处理", "name": "镶嵌螺母" }
+      ],
+      "gallery": [
+        {
+          "type": "image",
+          "name": "enclosure-exploded",
+          "url": "https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=studio%20product%20photo%20of%20a%203D%20printed%20electronics%20enclosure%20prototype%2C%20exploded%20view%20layout%2C%20dark%20workbench%2C%20industrial%20lighting%2C%20matte%20polymer%20texture%2C%20realistic%2C%20high%20detail&image_size=landscape_4_3"
+        },
+        {
+          "type": "image",
+          "name": "enclosure-assembled",
+          "url": "https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=studio%20photo%20of%20a%203D%20printed%20electronics%20device%20enclosure%20assembled%2C%20clean%20edges%2C%20screw%20posts%20and%20vents%2C%20dark%20background%2C%20soft%20rim%20light%2C%20realistic%20product%20photography&image_size=landscape_4_3"
+        }
+      ],
+      "skus": [
+        {
+          "id": "sku_encl_abs_black",
+          "skuCode": "ENCL-ABS-BLK",
+          "attributes": { "材料": "ABS", "颜色": "黑", "结构": "卡扣+螺丝" },
+          "priceMin": 160,
+          "priceMax": 380,
+          "stockQty": 15,
+          "published": true
+        }
+      ],
+      "featured": false,
+      "published": true
+    },
+    {
+      "id": "prod_dental-model",
+      "title": "牙科模型（展示/校验）",
+      "summary": "用于演示与校验的牙科模型，表面细节清晰，适合教学与方案沟通。",
+      "process": "SLA",
+      "material": "生物兼容树脂（可选）",
+      "leadTimeDays": 6,
+      "priceHint": "支持按扫描数据/模型文件生产",
+      "tags": [
+        { "group": "行业", "name": "医疗牙科" },
+        { "group": "用途", "name": "教学展示" },
+        { "group": "精度等级", "name": "高精度" }
+      ],
+      "gallery": [
+        {
+          "type": "image",
+          "name": "dental-model-top",
+          "url": "https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=studio%20product%20photo%20of%20a%20dental%20model%20prototype%2C%20resin%203D%20printed%2C%20clean%20anatomy%20detail%2C%20soft%20lighting%2C%20dark%20background%2C%20realistic%2C%20high%20detail&image_size=landscape_4_3"
+        },
+        {
+          "type": "image",
+          "name": "dental-model-side",
+          "url": "https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=side%20angle%20studio%20photo%20of%20a%20dental%20model%20resin%20print%2C%20subtle%20surface%20detail%2C%20dark%20background%2C%20soft%20rim%20light%2C%20realistic%20product%20photography&image_size=landscape_4_3"
+        }
+      ],
+      "skus": [
+        {
+          "id": "sku_dental_standard",
+          "skuCode": "DENT-STD",
+          "attributes": { "用途": "展示", "精度": "±0.1mm" },
+          "priceMin": 260,
+          "priceMax": 520,
+          "stockQty": 8,
+          "published": true
+        }
+      ],
+      "featured": true,
+      "published": true
+    },
+    {
+      "id": "prod_drone-frame",
+      "title": "穿越机机架（轻量化）",
+      "summary": "强调轻量与韧性，适合结构验证与小批量试产，支持不同臂长与孔距方案。",
+      "process": "SLS",
+      "material": "尼龙PA12",
+      "leadTimeDays": 8,
+      "priceHint": "可根据强度需求建议壁厚与填充",
+      "tags": [
+        { "group": "行业", "name": "无人机" },
+        { "group": "用途", "name": "功能件" },
+        { "group": "材料", "name": "尼龙" }
+      ],
+      "gallery": [
+        {
+          "type": "image",
+          "name": "drone-frame-flatlay",
+          "url": "https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=studio%20flatlay%20photo%20of%20a%20nylon%203D%20printed%20drone%20frame%2C%20engineering%20prototype%20aesthetic%2C%20dark%20background%2C%20high%20contrast%2C%20realistic%20product%20photography&image_size=landscape_4_3"
+        },
+        {
+          "type": "image",
+          "name": "drone-frame-detail",
+          "url": "https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=close-up%20studio%20photo%20of%20a%20nylon%203D%20printed%20drone%20frame%20texture%2C%20slightly%20grainy%20SLS%20surface%2C%20dark%20background%2C%20soft%20rim%20light%2C%20realistic%20high%20detail&image_size=landscape_4_3"
+        }
+      ],
+      "skus": [
+        {
+          "id": "sku_drone_5inch",
+          "skuCode": "DRONE-5IN",
+          "attributes": { "规格": "5寸", "孔距": "标准", "材料": "PA12" },
+          "priceMin": 420,
+          "priceMax": 980,
+          "stockQty": 5,
+          "published": true
+        }
+      ],
+      "featured": false,
+      "published": true
+    }
+  ]
+}
+

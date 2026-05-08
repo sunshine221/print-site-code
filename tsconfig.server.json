@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "rootDir": "./api",
+    "outDir": "./api/dist",
+    "module": "Node16",
+    "moduleResolution": "node16",
+    "allowImportingTsExtensions": false,
+    "types": ["node", "express"]
+  },
+  "include": ["api"]
+}
