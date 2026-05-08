@@ -24,6 +24,7 @@
 cd /opt/print-site
 git clone https://github.com/sunshine221/print-site-code.git
 cd print-site-code
+cd workspace
 ```
 
 ## 二、安装运行环境（一次性）
@@ -42,7 +43,7 @@ sudo npm i -g pm2
 ## 三、安装依赖（项目级）
 在项目目录执行：
 ```bash
-cd /opt/print-site/print-site-code
+cd /opt/print-site/print-site-code/workspace
 npm install
 ```
 
@@ -52,12 +53,12 @@ npm run build
 ```
 
 构建结果：
-- 前端：`/opt/print-site/print-site-code/dist`
-- 后端：`/opt/print-site/print-site-code/api/dist`
+- 前端：`/opt/print-site/print-site-code/workspace/dist`
+- 后端：`/opt/print-site/print-site-code/workspace/api/dist`
 
 ## 五、启动后端（PM2）
 ```bash
-cd /opt/print-site/print-site-code
+cd /opt/print-site/print-site-code/workspace
 pm2 start api/dist/server.js --name print-site-api
 pm2 save
 pm2 startup
@@ -85,7 +86,7 @@ server {
   listen 80;
   server_name _;  # 可替换为你的域名，例如 server_name ymbj.online www.ymbj.online;
 
-  root /opt/print-site/print-site-code/dist;
+  root /opt/print-site/print-site-code/workspace/dist;
   index index.html;
 
   location /api/ {
@@ -152,7 +153,7 @@ npm install
 - 浏览器访问 `/admin/login` 显示 Nginx 404
 
 原因：
-- `root` 指向路径不对（真实 dist 在 `/opt/print-site/print-site-code/dist`）
+- `root` 指向路径不对（真实 dist 在 `/opt/print-site/print-site-code/workspace/dist`）
 - 或缺少 SPA 回退：`try_files $uri /index.html;`
 
 排查：
