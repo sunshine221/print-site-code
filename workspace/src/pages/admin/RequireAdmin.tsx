@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Navigate } from "react-router-dom"
-import { apiFetch } from "@/lib/api"
+import { ApiError, apiFetch } from "@/lib/api"
 import { useAuthStore } from "@/stores/auth"
 
 export default function RequireAdmin({ children }: { children: React.ReactNode }) {
@@ -17,12 +17,14 @@ export default function RequireAdmin({ children }: { children: React.ReactNode }
     }
     apiFetch<{ id: string; email: string; name: string }>("/api/auth/me", { token })
       .then((u) => setAuth(token, u))
-      .catch(() => clear())
+      .catch((e) => {
+        if (e instanceof ApiError && e.status === 401) clear()
+      })
       .finally(() => setChecking(false))
   }, [clear, setAuth, token])
 
   if (!token) return <Navigate to="/admin/login" replace />
-  if (checking && !user) return <div className="min-h-screen bg-zinc-950 text-zinc-100" />
+  if (checking && !user)
+    return <div className="min-h-screen bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100" />
   return <>{children}</>
 }
-

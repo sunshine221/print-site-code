@@ -120,5 +120,14 @@ router.patch("/:id", (req: Request, res: Response) => {
   res.json({ success: true })
 })
 
-export default router
+router.delete("/:id", (req: Request, res: Response) => {
+  const db = getDb()
+  const id = String(req.params.id || "")
+  db.transaction(() => {
+    db.prepare("DELETE FROM inquiry_attachment WHERE inquiry_id = ?").run(id)
+    db.prepare("DELETE FROM inquiry WHERE id = ?").run(id)
+  })()
+  res.json({ success: true })
+})
 
+export default router

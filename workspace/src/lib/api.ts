@@ -2,7 +2,16 @@ export type ApiOk<T> = { success: true; data: T }
 export type ApiErr = { success: false; error: string }
 
 export function getApiBaseUrl() {
-  return ""
+  return (import.meta as any).env?.VITE_API_BASE_URL || ""
+}
+
+export class ApiError extends Error {
+  status: number
+
+  constructor(message: string, status: number) {
+    super(message)
+    this.status = status
+  }
 }
 
 export async function apiFetch<T>(
@@ -24,9 +33,8 @@ export async function apiFetch<T>(
       (json as any)?.error ||
       (typeof (json as any)?.message === "string" ? (json as any).message : "") ||
       `请求失败 (${res.status})`
-    throw new Error(msg)
+    throw new ApiError(msg, res.status)
   }
 
   return (json as ApiOk<T>).data
 }
-

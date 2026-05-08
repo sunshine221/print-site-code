@@ -14,18 +14,20 @@ const router = Router()
  * POST /api/auth/login
  */
 router.post("/login", async (req: Request, res: Response): Promise<void> => {
-  const email = String(req.body?.email || "").trim().toLowerCase()
+  const identifier = String(req.body?.identifier ?? req.body?.email ?? "").trim()
   const password = String(req.body?.password || "")
 
-  if (!email || !password) {
+  if (!identifier || !password) {
     res.status(400).json({ success: false, error: "Missing credentials" })
     return
   }
 
   const db = getDb()
   const row = db
-    .prepare("SELECT id, email, name, password_hash FROM admin_user WHERE email = ?")
-    .get(email) as any
+    .prepare(
+      "SELECT id, email, name, password_hash FROM admin_user WHERE lower(email) = lower(?) OR lower(name) = lower(?)",
+    )
+    .get(identifier, identifier) as any
 
   if (!row?.id) {
     res.status(401).json({ success: false, error: "Invalid credentials" })
