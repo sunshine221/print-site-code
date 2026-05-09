@@ -40,9 +40,8 @@
 1. `README.md`
 2. `PROJECT_MAP.md`
 3. `contexts/context.md`
-4. `workspace/README.md`
-5. `.trae/documents/*.md`
-6. `workspace/docs/project/**`（如存在）
+4. `.trae/documents/*.md`
+5. `docs/project/**`（如存在）
 
 ### 4.2 如果缺失关键上下文
 - 先询问项目基本情况，再继续推进。

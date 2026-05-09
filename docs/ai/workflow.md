@@ -28,7 +28,7 @@
 - 验收标准（checklist 或 Given/When/Then）
 - 边界/反例用例（异常、权限、并发、幂等、空值、超限）
 落库：
-- `workspace/docs/project/features/FE-xxx-*.md` 或 `AD-xxx-*.md`（如果没有就先创建一张需求卡片）
+- `docs/project/features/FE-xxx-*.md` 或 `AD-xxx-*.md`（如果没有就先创建一张需求卡片）
 
 ### 2.2 方案阶段（架构/方案评审）
 输入：
@@ -39,7 +39,7 @@
 - API 与数据模型漏洞扫描：幂等性、并发、权限、错误码、兼容性
 - 推荐方案与关键决策（必须能写成明确约束）
 落库：
-- `workspace/docs/project/specs/<feature>.md`（Tech Spec）
+- `docs/project/specs/<feature>.md`（Tech Spec）
 
 ### 2.3 实现阶段（实现工程师）
 输入：
@@ -80,7 +80,7 @@
 
 ## 3. 推荐目录（与 PRD 形成闭环）
 如果你想把 PRD 的“需求卡片”概念真正落地，建议按下面结构维护：
-- `workspace/docs/project/backlog.md`
-- `workspace/docs/project/features/`（需求卡片）
-- `workspace/docs/project/specs/`（Tech Spec）
-- `workspace/docs/project/release/`（发布记录与检查单）
+- `docs/project/backlog.md`
+- `docs/project/features/`（需求卡片）
+- `docs/project/specs/`（Tech Spec）
+- `docs/project/release/`（发布记录与检查单）
