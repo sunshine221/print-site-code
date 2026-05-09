@@ -10,9 +10,10 @@ function nowIso() {
 
 function getAdminSeed() {
   const email = process.env.ADMIN_EMAIL?.trim() || "admin@example.com"
+  const username = (process.env.ADMIN_USERNAME?.trim() || "admin").toLowerCase()
   const password = process.env.ADMIN_PASSWORD?.trim() || "admin12345"
   const name = process.env.ADMIN_NAME?.trim() || "管理员"
-  return { email, password, name }
+  return { email, username, password, name }
 }
 
 export function seedIfEmpty(db: Database.Database) {
@@ -30,16 +31,16 @@ export function seedIfEmpty(db: Database.Database) {
 }
 
 function seedAdmin(db: Database.Database) {
-  const { email, password, name } = getAdminSeed()
+  const { email, username, password, name } = getAdminSeed()
   const existing = db
-    .prepare("SELECT id FROM admin_user WHERE email = ?")
-    .get(email) as any
+    .prepare("SELECT id FROM admin_user WHERE email = ? OR username = ?")
+    .get(email, username) as any
   if (existing?.id) return
 
   const passwordHash = bcrypt.hashSync(password, 10)
   db.prepare(
-    "INSERT INTO admin_user (id, email, name, password_hash, created_at) VALUES (?, ?, ?, ?, ?)",
-  ).run(nanoid(), email, name, passwordHash, nowIso())
+    "INSERT INTO admin_user (id, email, username, name, password_hash, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+  ).run(nanoid(), email, username, name, passwordHash, nowIso())
 }
 
 function seedPricingRule(db: Database.Database) {
@@ -144,4 +145,3 @@ function seedDemoProducts(db: Database.Database) {
     }
   })()
 }
-

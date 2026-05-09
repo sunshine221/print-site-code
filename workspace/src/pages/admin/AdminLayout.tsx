@@ -15,6 +15,12 @@ export default function AdminLayout() {
   const user = useAuthStore((s) => s.user)
   const clear = useAuthStore((s) => s.clear)
 
+  function onLogout() {
+    const ok = window.confirm("确认退出登录？")
+    if (!ok) return
+    clear()
+  }
+
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <div className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-8 md:grid-cols-12">
@@ -45,7 +51,7 @@ export default function AdminLayout() {
 
             <button
               type="button"
-              onClick={clear}
+              onClick={onLogout}
               className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-zinc-50"
             >
               <LogOut className="h-4 w-4" />
@@ -61,4 +67,3 @@ export default function AdminLayout() {
     </div>
   )
 }
-

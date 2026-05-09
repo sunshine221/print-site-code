@@ -7,7 +7,7 @@ import { useAuthStore } from "@/stores/auth"
 export default function AdminLogin() {
   const navigate = useNavigate()
   const setAuth = useAuthStore((s) => s.setAuth)
-  const [email, setEmail] = useState("admin@example.com")
+  const [account, setAccount] = useState("admin@example.com")
   const [password, setPassword] = useState("")
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -20,7 +20,7 @@ export default function AdminLogin() {
         "/api/auth/login",
         {
           method: "POST",
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ account, password }),
         },
       )
       setAuth(data.token, data.user)
@@ -48,10 +48,10 @@ export default function AdminLogin() {
 
           <div className="mt-6 space-y-4">
             <div>
-              <label className="text-xs text-zinc-400">邮箱</label>
+              <label className="text-xs text-zinc-400">邮箱或账号</label>
               <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={account}
+                onChange={(e) => setAccount(e.target.value)}
                 className="mt-2 w-full rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-zinc-700"
               />
             </div>
@@ -86,4 +86,3 @@ export default function AdminLogin() {
     </div>
   )
 }
-
