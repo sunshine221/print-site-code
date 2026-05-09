@@ -6,5 +6,4 @@
 
 ## 写法要求
 - 必须包含：背景、范围、验收标准、边界用例、验证方式、发布/回滚。
-- 模板参考：`workspace/docs/ai/templates/feature-card.md`
-
+- 模板参考：`docs/ai/templates/feature-card.md`

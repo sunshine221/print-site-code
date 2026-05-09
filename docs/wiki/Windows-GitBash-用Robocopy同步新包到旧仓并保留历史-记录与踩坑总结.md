@@ -4,7 +4,7 @@
 ## 场景与目录
 ### 新包目录（图1）
 - `D:\Wysen\print_site_code\20260508_1.0\`
-  - `workspace\`：项目源码
+  - `api\`、`src\`、`docs\`、`migrations\` 等：项目源码
   - `.trae\documents\`：需求/技术文档
 
 ### 旧仓目录（图2）
@@ -22,7 +22,7 @@
 - 在 Git Bash 中执行 robocopy 时加：
   - `MSYS2_ARG_CONV_EXCL='*'`（禁用参数路径转换）
 
-本次使用的命令（同步新包根目录到旧仓根目录，镜像覆盖；会同步 `workspace` 与 `.trae` 等目录）：
+本次使用的命令（同步新包根目录到旧仓根目录，镜像覆盖；会同步源码目录与 `.trae` 等目录）：
 ```bash
 MSYS2_ARG_CONV_EXCL='*' /c/Windows/System32/robocopy.exe "D:\Wysen\print_site_code\20260508_1.0" "D:\Wysen\print_site_code\print-site-code" /MIR /XD ".git" "node_modules" "dist" "api\dist" "api\data" /XF ".env"
 ```
@@ -33,7 +33,7 @@ MSYS2_ARG_CONV_EXCL='*' /c/Windows/System32/robocopy.exe "D:\Wysen\print_site_co
 - `/XF ".env"`：避免提交本地敏感配置
 
 适用场景：
-- 旧仓根目录下包含 `workspace/`（代码）与 `.trae/`（文档）的结构，需要一次性整体同步更新。
+- 旧仓根目录下包含源码目录与 `.trae/`（文档）的结构，需要一次性整体同步更新。
 
 如需同时同步 `.trae/documents` 文档（用于跨设备继续开发），再额外执行：
 ```bash
@@ -128,16 +128,13 @@ git config --global core.quotepath false
 - 对跨平台项目，建议统一配置 `.gitattributes` 或 `core.autocrlf` 策略（后续再定）。
 
 ### 5) 同步源目录建议更精确
-当旧仓根目录结构为 `...\print-site-code\`（根下有 `workspace/` 与 `.trae/`）时，有两种同步策略：
+当旧仓根目录结构为 `...\print-site-code\`（根下有源码目录与 `.trae/`）时，有两种同步策略：
 - 一次性同步根目录（简单）：`...\20260508_1.0` → `...\print-site-code`
 - 拆分同步（更可控）：
-  - 代码：`...\20260508_1.0\workspace` → `...\print-site-code\workspace`
+  - 代码：`...\20260508_1.0` → `...\print-site-code`
   - 文档：`...\20260508_1.0\.trae` → `...\print-site-code\.trae`
 
 如果你希望“代码与文档分开同步”，建议拆成两条 robocopy：
-- 仅同步代码：
-  - 源：`...\20260508_1.0\workspace`
-  - 目标：旧仓的 `workspace`（`...\print-site-code\workspace`）
-- 再同步文档：
+- 仅同步 `.trae` 文档：
   - 源：`...\20260508_1.0\.trae`
   - 目标：旧仓根目录下的 `.trae`（`...\print-site-code\.trae`）
