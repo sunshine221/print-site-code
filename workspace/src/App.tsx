@@ -9,11 +9,17 @@ import RequireAdmin from "@/pages/admin/RequireAdmin"
 import AdminLayout from "@/pages/admin/AdminLayout"
 import AdminDashboard from "@/pages/admin/Dashboard"
 import AdminProducts from "@/pages/admin/Products"
+import AdminProductEdit from "@/pages/admin/ProductEdit"
 import AdminInquiries from "@/pages/admin/Inquiries"
+import AdminInquiryDetail from "@/pages/admin/InquiryDetail"
 import AdminPricing from "@/pages/admin/Pricing"
+import AdminPricingEdit from "@/pages/admin/PricingEdit"
 import AdminSettings from "@/pages/admin/Settings"
+import { useTheme } from "@/hooks/useTheme"
 
 export default function App() {
+  useTheme()
+
   return (
     <Router>
       <Routes>
@@ -35,8 +41,13 @@ export default function App() {
           <Route index element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="products" element={<AdminProducts />} />
+          <Route path="products/new" element={<AdminProductEdit />} />
+          <Route path="products/:id/edit" element={<AdminProductEdit />} />
           <Route path="inquiries" element={<AdminInquiries />} />
+          <Route path="inquiries/:id" element={<AdminInquiryDetail />} />
           <Route path="pricing" element={<AdminPricing />} />
+          <Route path="pricing/new" element={<AdminPricingEdit />} />
+          <Route path="pricing/:id/edit" element={<AdminPricingEdit />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>
 

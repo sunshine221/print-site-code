@@ -14,11 +14,18 @@ const router = Router()
  * POST /api/auth/login
  */
 router.post("/login", async (req: Request, res: Response): Promise<void> => {
+<<<<<<< HEAD
   const accountRaw = String(req.body?.account ?? req.body?.email ?? "").trim()
   const account = accountRaw.toLowerCase()
   const password = String(req.body?.password || "")
 
   if (!accountRaw || !password) {
+=======
+  const identifier = String(req.body?.identifier ?? req.body?.email ?? "").trim()
+  const password = String(req.body?.password || "")
+
+  if (!identifier || !password) {
+>>>>>>> dd29c8ccdf4fd915287165702b3859a3555b2499
     res.status(400).json({ success: false, error: "Missing credentials" })
     return
   }
@@ -26,9 +33,15 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
   const db = getDb()
   const row = db
     .prepare(
+<<<<<<< HEAD
       "SELECT id, email, username, name, password_hash FROM admin_user WHERE lower(email) = ? OR lower(username) = ?",
     )
     .get(account, account) as any
+=======
+      "SELECT id, email, name, password_hash FROM admin_user WHERE lower(email) = lower(?) OR lower(name) = lower(?)",
+    )
+    .get(identifier, identifier) as any
+>>>>>>> dd29c8ccdf4fd915287165702b3859a3555b2499
 
   if (!row?.id) {
     res.status(401).json({ success: false, error: "Invalid credentials" })

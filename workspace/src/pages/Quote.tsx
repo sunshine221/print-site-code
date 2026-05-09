@@ -6,6 +6,7 @@ import { apiFetch } from "@/lib/api"
 import QuoteMainCard from "@/pages/quote/QuoteMainCard"
 import QuoteSidebar from "@/pages/quote/QuoteSidebar"
 import type { ProductDetailLite, QuoteEstimate } from "@/pages/quote/types"
+import { usePageTitle } from "@/hooks/usePageTitle"
 
 export default function Quote() {
   const [search] = useSearchParams()
@@ -15,6 +16,8 @@ export default function Quote() {
 
   const isService = type === "service"
   const isProduct = type === "product"
+
+  usePageTitle(isService ? "代打服务询价" : "平台产品询价")
 
   const [product, setProduct] = useState<ProductDetailLite | null>(null)
   const sku = useMemo(() => product?.skus?.find((s) => s.id === skuId) || null, [product, skuId])
@@ -50,12 +53,21 @@ export default function Quote() {
       .catch(() => setProduct(null))
   }, [isProduct, productId])
 
+  const validationError = useMemo(() => {
+    if (!name.trim()) return "请填写姓名"
+    const emailValue = email.trim()
+    const phoneValue = phone.trim()
+    if (!emailValue && !phoneValue) return "邮箱或电话至少填写一项"
+    if (emailValue && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) return "邮箱格式不正确"
+    if (quantity < 1 || !Number.isFinite(quantity)) return "数量必须为正整数"
+    if (isProduct && !skuId) return "请选择产品 SKU"
+    if (isService && attachments.length === 0) return "代打服务需要上传模型文件"
+    return null
+  }, [attachments.length, email, isProduct, isService, name, phone, quantity, skuId])
+
   const canSubmit = useMemo(() => {
-    if (!name.trim() || !email.trim()) return false
-    if (isProduct && !skuId) return false
-    if (isService && attachments.length === 0) return false
-    return true
-  }, [attachments.length, email, isProduct, isService, name, skuId])
+    return validationError == null
+  }, [validationError])
 
   async function doEstimate() {
     setError(null)
@@ -74,6 +86,10 @@ export default function Quote() {
   }
 
   async function onSubmit() {
+    if (validationError) {
+      setError(validationError)
+      return
+    }
     setSubmitting(true)
     setError(null)
     setOkId(null)
@@ -87,7 +103,7 @@ export default function Quote() {
             productId: isProduct ? productId : undefined,
             skuId: isProduct ? skuId : undefined,
             name,
-            email,
+            email: email.trim() || undefined,
             phone: phone || undefined,
             company: company || undefined,
             quantity,
@@ -118,7 +134,11 @@ export default function Quote() {
               type={type}
               backTo={isProduct ? "/work" : "/service/print"}
               title={isService ? "代打服务询价" : "平台产品询价"}
-              subtitle={isService ? "上传文件并填写需求，获得预估报价区间。" : "选择SKU后提交询价，无需上传文件。"}
+              subtitle={
+                isService
+                  ? "代打服务：需要上传模型文件。上传并填写需求后获取预估报价区间。"
+                  : "平台产品：选择现有产品并提交询价，不需要上传文件。"
+              }
               productTitle={product?.title}
               skuCode={sku?.skuCode}
               skuAttrsText={
