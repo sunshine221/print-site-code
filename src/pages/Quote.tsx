@@ -5,7 +5,8 @@ import type { UploadedAsset } from "@/components/FileUpload"
 import { apiFetch } from "@/lib/api"
 import QuoteMainCard from "@/pages/quote/QuoteMainCard"
 import QuoteSidebar from "@/pages/quote/QuoteSidebar"
-import type { ProductDetailLite, QuoteEstimate } from "@/pages/quote/types"
+import type { ProductDetailLite } from "@/pages/quote/types"
+import { buildSkuTotalRange } from "@/pages/quote/types"
 import { usePageTitle } from "@/hooks/usePageTitle"
 
 export default function Quote() {
@@ -20,70 +21,75 @@ export default function Quote() {
   usePageTitle(isService ? "代打服务询价" : "平台产品询价")
 
   const [product, setProduct] = useState<ProductDetailLite | null>(null)
+  const [productLoading, setProductLoading] = useState(false)
+  const [productError, setProductError] = useState<string | null>(null)
   const sku = useMemo(() => product?.skus?.find((s) => s.id === skuId) || null, [product, skuId])
 
   const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
   const [phone, setPhone] = useState("")
-  const [company, setCompany] = useState("")
   const [quantity, setQuantity] = useState<number>(1)
-  const [processPreference, setProcessPreference] = useState("")
-  const [materialPreference, setMaterialPreference] = useState("")
-  const [precisionPreference, setPrecisionPreference] = useState("")
-  const [leadTimePreference, setLeadTimePreference] = useState("")
   const [notes, setNotes] = useState("")
   const [attachments, setAttachments] = useState<UploadedAsset[]>([])
 
-  const [estimate, setEstimate] = useState<QuoteEstimate | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [okId, setOkId] = useState<string | null>(null)
 
   useEffect(() => {
-    setEstimate(null)
     setOkId(null)
     setError(null)
+    setProductError(null)
   }, [type, skuId, productId])
 
   useEffect(() => {
     if (!isProduct) return
     if (!productId) return
+    setProductError(null)
+    setProductLoading(true)
     apiFetch<ProductDetailLite>(`/api/products/${productId}`)
-      .then(setProduct)
-      .catch(() => setProduct(null))
+      .then((p) => {
+        setProduct(p)
+        setProductLoading(false)
+      })
+      .catch(() => {
+        setProduct(null)
+        setProductError("产品不存在或不可用")
+        setProductLoading(false)
+      })
   }, [isProduct, productId])
+
+  const priceRange = useMemo(() => {
+    if (!isProduct || !sku) return null
+    return buildSkuTotalRange(sku, quantity)
+  }, [isProduct, quantity, sku])
+
+  const priceText = useMemo(() => {
+    if (isService) return "价格面议"
+    if (!productId) return "缺少 productId"
+    if (!skuId) return "请选择 SKU"
+    if (productError) return productError
+    if (productLoading) return "正在加载 SKU…"
+    if (!sku) return "SKU 无效或不属于该产品"
+    if (!priceRange) return "价格面议"
+    return ""
+  }, [isService, priceRange, productError, productId, productLoading, sku, skuId])
 
   const validationError = useMemo(() => {
     if (!name.trim()) return "请填写姓名"
-    const emailValue = email.trim()
     const phoneValue = phone.trim()
-    if (!emailValue && !phoneValue) return "邮箱或电话至少填写一项"
-    if (emailValue && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) return "邮箱格式不正确"
+    if (!phoneValue) return "请填写电话"
     if (quantity < 1 || !Number.isFinite(quantity)) return "数量必须为正整数"
+    if (isProduct && !productId) return "缺少 productId"
     if (isProduct && !skuId) return "请选择产品 SKU"
-    if (isService && attachments.length === 0) return "代打服务需要上传模型文件"
+    if (isProduct && productError) return productError
+    if (isProduct && productLoading) return "正在加载产品信息…"
+    if (isProduct && product && skuId && !sku) return "SKU 无效或不属于该产品"
     return null
-  }, [attachments.length, email, isProduct, isService, name, phone, quantity, skuId])
+  }, [isProduct, name, phone, product, productError, productId, productLoading, quantity, sku, skuId])
 
   const canSubmit = useMemo(() => {
     return validationError == null
   }, [validationError])
-
-  async function doEstimate() {
-    setError(null)
-    const data = await apiFetch<QuoteEstimate>("/api/quote/estimate", {
-      method: "POST",
-      body: JSON.stringify({
-        skuId: isProduct ? skuId : undefined,
-        quantity,
-        processPreference: processPreference || undefined,
-        materialPreference: materialPreference || undefined,
-        precisionPreference: precisionPreference || undefined,
-        leadTimePreference: leadTimePreference || undefined,
-      }),
-    })
-    setEstimate(data)
-  }
 
   async function onSubmit() {
     if (validationError) {
@@ -94,32 +100,22 @@ export default function Quote() {
     setError(null)
     setOkId(null)
     try {
-      const data = await apiFetch<{ id: string; status: string; createdAt: string; quoteEstimate: QuoteEstimate }>(
-        "/api/inquiries",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            inquiryType: isService ? "service_print" : "platform_product",
-            productId: isProduct ? productId : undefined,
-            skuId: isProduct ? skuId : undefined,
-            name,
-            email: email.trim() || undefined,
-            phone: phone || undefined,
-            company: company || undefined,
-            quantity,
-            processPreference: processPreference || undefined,
-            materialPreference: materialPreference || undefined,
-            precisionPreference: precisionPreference || undefined,
-            leadTimePreference: leadTimePreference || undefined,
-            notes: notes || undefined,
-            attachments: isService ? attachments : [],
-          }),
-        },
-      )
+      const data = await apiFetch<{ id: string; status: string; createdAt: string }>("/api/inquiries", {
+        method: "POST",
+        body: JSON.stringify({
+          inquiryType: isService ? "service_print" : "platform_product",
+          productId: isProduct ? productId : undefined,
+          skuId: isProduct ? skuId : undefined,
+          name,
+          phone: phone || undefined,
+          quantity,
+          notes: notes || undefined,
+          attachments: isService ? attachments : [],
+        }),
+      })
       setOkId(data.id)
-      setEstimate(data.quoteEstimate)
-    } catch (e: any) {
-      setError(String(e?.message || e))
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : String(e))
     } finally {
       setSubmitting(false)
     }
@@ -136,8 +132,8 @@ export default function Quote() {
               title={isService ? "代打服务询价" : "平台产品询价"}
               subtitle={
                 isService
-                  ? "代打服务：需要上传模型文件。上传并填写需求后获取预估报价区间。"
-                  : "平台产品：选择现有产品并提交询价，不需要上传文件。"
+                  ? "代打服务：可选上传模型文件，提交后由工程师评估报价。"
+                  : "平台产品：选择 SKU 与数量后提交询价，不需要上传文件。"
               }
               productTitle={product?.title}
               skuCode={sku?.skuCode}
@@ -153,22 +149,10 @@ export default function Quote() {
               }
               name={name}
               setName={setName}
-              email={email}
-              setEmail={setEmail}
               phone={phone}
               setPhone={setPhone}
-              company={company}
-              setCompany={setCompany}
               quantity={quantity}
               setQuantity={setQuantity}
-              processPreference={processPreference}
-              setProcessPreference={setProcessPreference}
-              materialPreference={materialPreference}
-              setMaterialPreference={setMaterialPreference}
-              precisionPreference={precisionPreference}
-              setPrecisionPreference={setPrecisionPreference}
-              leadTimePreference={leadTimePreference}
-              setLeadTimePreference={setLeadTimePreference}
               notes={notes}
               setNotes={setNotes}
               attachments={attachments}
@@ -180,12 +164,12 @@ export default function Quote() {
 
           <div className="md:col-span-5">
             <QuoteSidebar
-              estimate={estimate}
-              onEstimate={doEstimate}
+              priceRange={priceRange}
+              priceText={priceText}
               onSubmit={onSubmit}
               canSubmit={canSubmit}
               submitting={submitting}
-              productReady={!isProduct || Boolean(sku)}
+              productReady={!isProduct || (!productLoading && Boolean(sku))}
             />
           </div>
         </div>

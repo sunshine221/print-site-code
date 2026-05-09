@@ -1,7 +1,6 @@
 import { Router, type Request, type Response } from "express"
 import { nanoid } from "nanoid"
 import { getDb } from "../context.js"
-import { estimateQuote } from "../pricing.js"
 
 const router = Router()
 
@@ -9,30 +8,24 @@ function nowIso() {
   return new Date().toISOString()
 }
 
-function normalizeEmail(v: any) {
-  return String(v || "").trim().toLowerCase()
-}
-
 router.post("/", (req: Request, res: Response) => {
   const body = req.body || {}
   const inquiryType = String(body.inquiryType || "")
 
   const name = String(body.name || "").trim()
-  const email = normalizeEmail(body.email)
   const phone = String(body.phone || "").trim()
-  const company = String(body.company || "").trim()
-  const useCase = String(body.useCase || "").trim()
   const quantity = body.quantity != null ? Number(body.quantity) : undefined
-  const materialPreference = String(body.materialPreference || "").trim()
-  const processPreference = String(body.processPreference || "").trim()
-  const precisionPreference = String(body.precisionPreference || "").trim()
-  const leadTimePreference = String(body.leadTimePreference || "").trim()
   const notes = String(body.notes || "").trim()
   const skuId = body.skuId ? String(body.skuId) : undefined
   const productId = body.productId ? String(body.productId) : undefined
 
-  if (!name || !email) {
+  if (!name || !phone) {
     res.status(400).json({ success: false, error: "Missing required fields" })
+    return
+  }
+
+  if (quantity == null || !Number.isFinite(quantity) || quantity < 1) {
+    res.status(400).json({ success: false, error: "Invalid quantity" })
     return
   }
 
@@ -47,8 +40,8 @@ router.post("/", (req: Request, res: Response) => {
   }
 
   const attachments = Array.isArray(body.attachments) ? body.attachments : []
-  if (inquiryType === "service_print" && attachments.length === 0) {
-    res.status(400).json({ success: false, error: "Attachment required for service_print" })
+  if (inquiryType === "platform_product" && attachments.length > 0) {
+    res.status(400).json({ success: false, error: "Attachments not allowed for platform_product" })
     return
   }
 
@@ -58,19 +51,24 @@ router.post("/", (req: Request, res: Response) => {
   if (!resolvedProductId && skuId) {
     const sku = db
       .prepare("SELECT product_id as productId FROM product_sku WHERE id = ?")
-      .get(skuId) as any
+      .get(skuId) as { productId?: string } | undefined
     if (sku?.productId) resolvedProductId = sku.productId
   }
 
-  const estimate = estimateQuote(db, {
-    skuId,
-    quantity,
-    processPreference,
-    materialPreference,
-    precisionPreference,
-    leadTimePreference,
-    modelMetrics: body.modelMetrics,
-  })
+  if (inquiryType === "platform_product") {
+    const sku = db
+      .prepare("SELECT id, product_id as productId FROM product_sku WHERE id = ?")
+      .get(skuId) as { id?: string; productId?: string } | undefined
+    if (!sku?.id) {
+      res.status(400).json({ success: false, error: "Invalid skuId" })
+      return
+    }
+    if (productId && sku.productId !== productId) {
+      res.status(400).json({ success: false, error: "skuId not belong to productId" })
+      return
+    }
+    resolvedProductId = sku.productId
+  }
 
   const createdAt = nowIso()
   const inquiryId = nanoid()
@@ -90,10 +88,6 @@ router.post("/", (req: Request, res: Response) => {
         size: a.size != null ? Number(a.size) : undefined,
       })
     }
-    if (mediaRows.length === 0) {
-      res.status(400).json({ success: false, error: "Attachment required for service_print" })
-      return
-    }
   }
 
   db.transaction(() => {
@@ -109,19 +103,12 @@ router.post("/", (req: Request, res: Response) => {
       skuId ?? null,
       JSON.stringify({
         name,
-        email,
-        phone: phone || undefined,
-        company: company || undefined,
-        useCase: useCase || undefined,
         quantity,
-        materialPreference: materialPreference || undefined,
-        processPreference: processPreference || undefined,
-        precisionPreference: precisionPreference || undefined,
-        leadTimePreference: leadTimePreference || undefined,
+        phone,
         notes: notes || undefined,
       }),
-      JSON.stringify(estimate),
-      estimate.ruleVersion ?? null,
+      null,
+      null,
       createdAt,
       createdAt,
     )
@@ -143,9 +130,8 @@ router.post("/", (req: Request, res: Response) => {
 
   res.json({
     success: true,
-    data: { id: inquiryId, status: "new", quoteEstimate: estimate, createdAt },
+    data: { id: inquiryId, status: "new", createdAt },
   })
 })
 
 export default router
-
