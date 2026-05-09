@@ -106,7 +106,7 @@ export default function FileUpload({
           </div>
           <div className="min-w-0">
             <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-              {busy ? "正在上传…" : "上传文件（代打必填）"}
+              {busy ? "正在上传…" : "上传文件（可选）"}
             </div>
             <div className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
               支持 STL/STEP/OBJ/GLB/ZIP/PDF/图片；单文件大小受服务端限制

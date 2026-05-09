@@ -10,7 +10,7 @@ type InquiryItem = {
   id: string
   status: string
   inquiryType: string
-  request: { name: string; email: string; notes?: string }
+  request: { name?: string; phone?: string; email?: string; quantity?: number; notes?: string }
   quoteEstimate?: { priceMin: number; priceMax: number; currency: string } | null
   createdAt: string
 }
@@ -83,8 +83,12 @@ export default function AdminInquiries() {
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">{i.request.name}</div>
-                    <div className="text-xs text-zinc-500 dark:text-zinc-400">{i.request.email}</div>
+                    <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+                      {i.request.name || "-"}
+                    </div>
+                    <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                      {i.request.phone || i.request.email || "-"}
+                    </div>
                     <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[11px] text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-300">
                       {i.inquiryType === "service_print" ? "代打" : "产品"}
                     </span>
