@@ -13,11 +13,7 @@ export default function AdminLogin() {
   const token = useAuthStore((s) => s.token)
   const clear = useAuthStore((s) => s.clear)
   const setAuth = useAuthStore((s) => s.setAuth)
-<<<<<<< HEAD
-  const [account, setAccount] = useState("admin@example.com")
-=======
-  const [identifier, setIdentifier] = useState("")
->>>>>>> dd29c8ccdf4fd915287165702b3859a3555b2499
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -37,11 +33,7 @@ export default function AdminLogin() {
         "/api/auth/login",
         {
           method: "POST",
-<<<<<<< HEAD
-          body: JSON.stringify({ account, password }),
-=======
-          body: JSON.stringify({ identifier, password }),
->>>>>>> dd29c8ccdf4fd915287165702b3859a3555b2499
+          body: JSON.stringify({ username, password }),
         },
       )
       setAuth(data.token, data.user)
@@ -70,20 +62,12 @@ export default function AdminLogin() {
 
           <div className="mt-6 space-y-4">
             <div>
-<<<<<<< HEAD
-              <label className="text-xs text-zinc-400">邮箱或账号</label>
+              <label className="text-xs text-zinc-500 dark:text-zinc-400">用户名</label>
               <input
-                value={account}
-                onChange={(e) => setAccount(e.target.value)}
-                className="mt-2 w-full rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-zinc-700"
-=======
-              <label className="text-xs text-zinc-500 dark:text-zinc-400">账号或邮箱</label>
-              <input
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                placeholder="请输入账号或邮箱"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="请输入用户名"
                 className="mt-2 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:placeholder:text-zinc-600 dark:focus:border-zinc-700"
->>>>>>> dd29c8ccdf4fd915287165702b3859a3555b2499
               />
             </div>
             <div>
