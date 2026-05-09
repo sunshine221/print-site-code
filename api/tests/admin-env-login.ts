@@ -1,7 +1,7 @@
 import assert from "node:assert/strict"
 import Database from "better-sqlite3"
 import bcrypt from "bcryptjs"
-import { resolveAdminSeed, syncAdminFromEnv } from "../seed.ts"
+import { resolveAdminSeed, syncAdminFromEnv } from "../seed.js"
 
 function createDb() {
   const db = new Database(":memory:")
@@ -60,4 +60,3 @@ function createDb() {
   assert.equal(row.username, "root")
   assert.equal(bcrypt.compareSync("pw", row.password_hash), true)
 }
-

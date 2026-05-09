@@ -9,5 +9,6 @@
     "allowImportingTsExtensions": false,
     "types": ["node", "express"]
   },
-  "include": ["api"]
+  "include": ["api"],
+  "exclude": ["api/tests"]
 }
