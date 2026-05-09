@@ -8,12 +8,27 @@ function nowIso() {
   return new Date().toISOString()
 }
 
-function getAdminSeed() {
-  const email = process.env.ADMIN_EMAIL?.trim() || "admin@example.com"
-  const username = (process.env.ADMIN_USERNAME?.trim() || "admin").toLowerCase()
-  const password = process.env.ADMIN_PASSWORD?.trim() || "admin12345"
-  const name = process.env.ADMIN_NAME?.trim() || "管理员"
-  return { email, username, password, name }
+export function resolveAdminSeed(env: NodeJS.ProcessEnv = process.env) {
+  const emailRaw = env.ADMIN_EMAIL?.trim()
+  const usernameRaw = env.ADMIN_USERNAME?.trim()
+  const passwordRaw = env.ADMIN_PASSWORD?.trim()
+  const nameRaw = env.ADMIN_NAME?.trim()
+
+  const email = emailRaw || "admin@example.com"
+  const username = (usernameRaw || "admin").toLowerCase()
+  const password = passwordRaw || "admin12345"
+  const name = nameRaw || "管理员"
+
+  return {
+    email,
+    username,
+    password,
+    name,
+    hasEmail: Boolean(emailRaw),
+    hasUsername: Boolean(usernameRaw),
+    hasPassword: Boolean(passwordRaw),
+    hasName: Boolean(nameRaw),
+  }
 }
 
 export function seedIfEmpty(db: Database.Database) {
@@ -30,17 +45,61 @@ export function seedIfEmpty(db: Database.Database) {
   seedAdmin(db)
 }
 
-function seedAdmin(db: Database.Database) {
-  const { email, username, password, name } = getAdminSeed()
-  const existing = db
-    .prepare("SELECT id FROM admin_user WHERE email = ? OR username = ?")
-    .get(email, username) as any
-  if (existing?.id) return
+export function syncAdminFromEnv(db: Database.Database, env: NodeJS.ProcessEnv = process.env) {
+  const { email, username, password, name, hasEmail, hasUsername, hasPassword, hasName } =
+    resolveAdminSeed(env)
 
-  const passwordHash = bcrypt.hashSync(password, 10)
-  db.prepare(
-    "INSERT INTO admin_user (id, email, username, name, password_hash, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-  ).run(nanoid(), email, username, name, passwordHash, nowIso())
+  const byEnv = db
+    .prepare(
+      "SELECT id, email, username, name, password_hash FROM admin_user WHERE email = ? OR lower(username) = ? LIMIT 1",
+    )
+    .get(email, username) as any
+
+  const first = db
+    .prepare("SELECT id, email, username, name, password_hash FROM admin_user ORDER BY created_at ASC LIMIT 1")
+    .get() as any
+
+  const existing = byEnv || first
+
+  if (!existing?.id) {
+    const passwordHash = bcrypt.hashSync(password, 10)
+    db.prepare(
+      "INSERT INTO admin_user (id, email, username, name, password_hash, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+    ).run(nanoid(), email, username, name, passwordHash, nowIso())
+    return
+  }
+
+  const updates: string[] = []
+  const values: any[] = []
+
+  if (hasEmail && email !== existing.email) {
+    updates.push("email = ?")
+    values.push(email)
+  }
+
+  const existingUsername = String(existing.username || "").trim().toLowerCase()
+  if (hasUsername && username !== existingUsername) {
+    updates.push("username = ?")
+    values.push(username)
+  }
+
+  if (hasName && name !== existing.name) {
+    updates.push("name = ?")
+    values.push(name)
+  }
+
+  if (hasPassword && !bcrypt.compareSync(password, existing.password_hash)) {
+    updates.push("password_hash = ?")
+    values.push(bcrypt.hashSync(password, 10))
+  }
+
+  if (!updates.length) return
+
+  db.prepare(`UPDATE admin_user SET ${updates.join(", ")} WHERE id = ?`).run(...values, existing.id)
+}
+
+function seedAdmin(db: Database.Database) {
+  syncAdminFromEnv(db, process.env)
 }
 
 function seedPricingRule(db: Database.Database) {

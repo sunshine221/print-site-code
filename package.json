@@ -11,6 +11,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "check": "tsc --noEmit",
+    "test:api": "tsx api/tests/admin-env-login.ts",
+    "test": "npm run test:api",
     "server:dev": "nodemon",
     "dev": "concurrently \"npm run client:dev\" \"npm run server:dev\""
   },
