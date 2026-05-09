@@ -1,5 +1,6 @@
-import { NavLink, Outlet } from "react-router-dom"
+import { NavLink, Outlet, useNavigate } from "react-router-dom"
 import { ClipboardList, LayoutDashboard, LogOut, Package, Settings, SlidersHorizontal } from "lucide-react"
+import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { useAuthStore } from "@/stores/auth"
 import ThemeToggle from "@/components/ThemeToggle"
@@ -15,10 +16,11 @@ const items = [
 export default function AdminLayout() {
   const user = useAuthStore((s) => s.user)
   const clear = useAuthStore((s) => s.clear)
+  const navigate = useNavigate()
+  const [logoutOpen, setLogoutOpen] = useState(false)
 
   function onLogout() {
-    const ok = window.confirm("确认退出登录？")
-    if (!ok) return
+    navigate("/", { replace: true })
     clear()
   }
 
@@ -53,13 +55,8 @@ export default function AdminLayout() {
 
             <button
               type="button"
-<<<<<<< HEAD
-              onClick={onLogout}
-              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-zinc-50"
-=======
-              onClick={clear}
+              onClick={() => setLogoutOpen(true)}
               className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-600 transition hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
->>>>>>> dd29c8ccdf4fd915287165702b3859a3555b2499
             >
               <LogOut className="h-4 w-4" />
               退出登录
@@ -71,6 +68,40 @@ export default function AdminLayout() {
           <Outlet />
         </main>
       </div>
+
+      {logoutOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <button
+            type="button"
+            aria-label="close"
+            onClick={() => setLogoutOpen(false)}
+            className="absolute inset-0 bg-black/40"
+          />
+          <div className="relative w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-5 shadow-xl dark:border-zinc-800 dark:bg-zinc-950">
+            <div className="text-base font-semibold text-zinc-900 dark:text-zinc-50">确认退出</div>
+            <div className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">确认退出登录？</div>
+            <div className="mt-5 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setLogoutOpen(false)}
+                className="inline-flex items-center justify-center rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-700 transition hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setLogoutOpen(false)
+                  onLogout()
+                }}
+                className="inline-flex items-center justify-center rounded-md bg-zinc-950 px-3 py-2 text-sm font-semibold text-zinc-50 transition hover:bg-zinc-900 dark:bg-zinc-50 dark:text-zinc-950 dark:hover:bg-white"
+              >
+                确认退出
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }
