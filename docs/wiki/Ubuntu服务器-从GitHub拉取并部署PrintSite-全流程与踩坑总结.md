@@ -24,7 +24,6 @@
 cd /opt/print-site
 git clone https://github.com/sunshine221/print-site-code.git
 cd print-site-code
-cd workspace
 ```
 
 ## 二、安装运行环境（一次性）
@@ -45,7 +44,7 @@ sudo npm i -g pm2
 ### 2.1 配置环境变量（一次性，必须）
 进入项目目录，复制并编辑 `.env`：
 ```bash
-cd /opt/print-site/print-site-code/workspace
+cd /opt/print-site/print-site-code
 cp .env.example .env
 nano .env
 ```
@@ -76,14 +75,14 @@ sudo chown -R $USER:$USER /opt/print-site/data
 ## 三、安装依赖（项目级）
 在项目目录执行：
 ```bash
-cd /opt/print-site/print-site-code/workspace
+cd /opt/print-site/print-site-code
 npm ci
 ```
 
 说明：
 - 推荐使用 `npm ci`（严格按 package-lock.json 安装，更稳定）
 - 每次 Git 更新后是否需要执行依赖安装：
-  - 若 `workspace/package.json` 或 `workspace/package-lock.json` 有变化：需要执行 `npm ci`
+  - 若 `package.json` 或 `package-lock.json` 有变化：需要执行 `npm ci`
   - 若没有变化：通常可以跳过依赖安装，直接构建与重启即可
 
 ## 四、构建前后端产物
@@ -92,12 +91,12 @@ npm run build
 ```
 
 构建结果：
-- 前端：`/opt/print-site/print-site-code/workspace/dist`
-- 后端：`/opt/print-site/print-site-code/workspace/api/dist`
+- 前端：`/opt/print-site/print-site-code/dist`
+- 后端：`/opt/print-site/print-site-code/api/dist`
 
 ## 五、启动后端（PM2）
 ```bash
-cd /opt/print-site/print-site-code/workspace
+cd /opt/print-site/print-site-code
 pm2 start api/dist/server.js --name print-site-api
 pm2 save
 pm2 startup
@@ -125,7 +124,7 @@ server {
   listen 80;
   server_name _;  # 可替换为你的域名，例如 server_name ymbj.online www.ymbj.online;
 
-  root /opt/print-site/print-site-code/workspace/dist;
+  root /opt/print-site/print-site-code/dist;
   index index.html;
 
   location /api/ {
@@ -174,15 +173,15 @@ git pull
 ```
 
 ### 7.3 安装依赖（按需）
-仅当 `workspace/package.json` 或 `workspace/package-lock.json` 有变化时执行：
+仅当 `package.json` 或 `package-lock.json` 有变化时执行：
 ```bash
-cd /opt/print-site/print-site-code/workspace
+cd /opt/print-site/print-site-code
 npm ci
 ```
 
 ### 7.4 重新构建（前端 dist + 后端 api/dist）
 ```bash
-cd /opt/print-site/print-site-code/workspace
+cd /opt/print-site/print-site-code
 npm run build
 ```
 
@@ -235,7 +234,7 @@ npm ci
 - 浏览器访问 `/admin/login` 显示 Nginx 404
 
 原因：
-- `root` 指向路径不对（真实 dist 在 `/opt/print-site/print-site-code/workspace/dist`）
+- `root` 指向路径不对（真实 dist 在 `/opt/print-site/print-site-code/dist`）
 - 或缺少 SPA 回退：`try_files $uri /index.html;`
 
 排查：

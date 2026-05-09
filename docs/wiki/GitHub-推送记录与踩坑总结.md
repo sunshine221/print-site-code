@@ -7,7 +7,7 @@
 - 分支：`main`
 
 ## 标准推送流程（推荐）
-在项目根目录（包含 `package.json` 的目录，例如解压后进入 `workspace/`）执行：
+在项目根目录（包含 `package.json` 的目录）执行：
 
 ```bash
 git init
